@@ -3,7 +3,7 @@ import argparse, json, os
 import torch
 
 from utils import Logger
-#from data import FolderDataManager, ImageTransforms
+# from data import FolderDataManager, ImageTransforms
 import data as data_module
 import net as net_module
 
@@ -17,6 +17,7 @@ def _get_transform(config, name):
     tsf_args = config['transforms']['args']
     return getattr(data_module, tsf_name)(name, tsf_args)
 
+
 def _get_model_att(checkpoint):
     m_name = checkpoint['config']['model']['type']
     sd = checkpoint['state_dict']
@@ -25,7 +26,6 @@ def _get_model_att(checkpoint):
 
 
 def eval_main(checkpoint):
-
     config = checkpoint['config']
     data_config = config['data']
 
@@ -38,7 +38,7 @@ def eval_main(checkpoint):
     model = getattr(net_module, m_name)(classes, config, state_dict=sd)
 
     print(model)
-    
+
     model.load_state_dict(checkpoint['state_dict'])
 
     num_classes = len(classes)
@@ -96,7 +96,6 @@ def train_main(config, resume):
     opt_args = config['optimizer']['args']
     optimizer = getattr(torch.optim, opt_name)(trainable_params, **opt_args)
 
-
     lr_name = config['lr_scheduler']['type']
     lr_args = config['lr_scheduler']['args']
     if lr_name == 'None':
@@ -104,8 +103,7 @@ def train_main(config, resume):
     else:
         lr_scheduler = getattr(torch.optim.lr_scheduler, lr_name)(optimizer, **lr_args)
 
-
-    trainer = Trainer(model, loss, metrics, optimizer, 
+    trainer = Trainer(model, loss, metrics, optimizer,
                       resume=resume,
                       config=config,
                       data_loader=t_loader,
@@ -115,11 +113,11 @@ def train_main(config, resume):
 
     trainer.train()
     return trainer
-    #duration = 1; freq = 440
-    #os.system('play --no-show-progress --null --channels 1 synth %s sine %f'%(duration, freq))
+    # duration = 1; freq = 440
+    # os.system('play --no-show-progress --null --channels 1 synth %s sine %f'%(duration, freq))
+
 
 def _test_loader(config):
-
     def disp_batch(batch):
         ret = []
         for b in batch:
@@ -137,14 +135,12 @@ def _test_loader(config):
         print(disp_batch([batch[0], batch[-1]]))
 
 
-
-
 if __name__ == '__main__':
     argparser = argparse.ArgumentParser(description='PyTorch Template')
 
     argparser.add_argument('action', type=str,
                            help='what action to take (train, test, eval)')
-    
+
     argparser.add_argument('-c', '--config', default=None, type=str,
                            help='config file path (default: None)')
     argparser.add_argument('-r', '--resume', default=None, type=str,
@@ -156,7 +152,6 @@ if __name__ == '__main__':
                            help='nn layer config file')
 
     args = argparser.parse_args()
-
 
     # Resolve config vs. resume
     checkpoint = None
@@ -170,7 +165,7 @@ if __name__ == '__main__':
 
     else:
         raise AssertionError("Configuration file need to be specified. Add '-c config.json', for example.")
-    
+
     # Pick mode to run
     if args.action == 'train':
         train_main(config, args.resume)
